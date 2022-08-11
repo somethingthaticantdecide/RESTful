@@ -1,11 +1,14 @@
 package edu.school21.restful.models;
 
+import edu.school21.restful.models.dto.CourseDto;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
+
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
 @Getter
 @Setter
@@ -27,6 +30,13 @@ public class Course {
     private String description;
     @ManyToOne
     private Lesson lessons;
+
+    public Course(CourseDto courseDto) {
+        this.startDate = LocalDate.parse(courseDto.getStartDate(), ISO_LOCAL_DATE);
+        this.endDate = LocalDate.parse(courseDto.getEndDate(), ISO_LOCAL_DATE);
+        this.description = courseDto.getDescription();
+        this.name = courseDto.getName();
+    }
 
     @Override
     public boolean equals(Object o) {

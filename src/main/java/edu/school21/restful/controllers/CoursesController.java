@@ -1,7 +1,6 @@
 package edu.school21.restful.controllers;
 
 import edu.school21.restful.models.Course;
-import edu.school21.restful.models.Lesson;
 import edu.school21.restful.models.dto.CourseDto;
 import edu.school21.restful.services.CoursesService;
 import org.springframework.http.HttpStatus;
@@ -41,10 +40,4 @@ public class CoursesController {
         }
     }
 
-    @GetMapping("{course-id}/lessons")
-    public ResponseEntity<?> getCourseLessons(@PathVariable("course-id") String courseId) {
-        Lesson lesson = new Lesson();
-//        lesson.setStartTime();
-        return ResponseEntity.ok(lesson);
-    }
 }
