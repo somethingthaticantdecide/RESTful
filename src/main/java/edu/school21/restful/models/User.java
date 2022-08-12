@@ -1,5 +1,6 @@
 package edu.school21.restful.models;
 
+import edu.school21.restful.models.dto.UserDto;
 import edu.school21.restful.models.roles.Role;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -27,6 +28,10 @@ public class User {
     private Role roles;
     private String login;
     private String password;
+
+    public User(UserDto userDto) {
+
+    }
 
     @Override
     public boolean equals(Object o) {

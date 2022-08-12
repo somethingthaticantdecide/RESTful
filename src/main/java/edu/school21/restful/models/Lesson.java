@@ -1,14 +1,17 @@
 package edu.school21.restful.models;
 
+import edu.school21.restful.models.dto.LessonDto;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,4 +24,8 @@ public class Lesson {
     @OneToOne
     @JoinColumn(name = "teacher_id")
     private User teacher;
+
+    public Lesson(LessonDto lessonDto) {
+
+    }
 }
