@@ -1,6 +1,5 @@
 package edu.school21.restful.models;
 
-import edu.school21.restful.models.dto.UserDto;
 import edu.school21.restful.models.roles.Role;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -20,18 +19,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-
     private String firstname;
     private String lastname;
-
     @Enumerated(EnumType.STRING)
     private Role roles;
     private String login;
     private String password;
-
-    public User(UserDto userDto) {
-
-    }
 
     @Override
     public boolean equals(Object o) {

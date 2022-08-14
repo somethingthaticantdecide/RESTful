@@ -1,16 +1,18 @@
 package edu.school21.restful.models;
 
 import edu.school21.restful.models.dto.LessonDto;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @NoArgsConstructor
 public class Lesson {
     @Id
@@ -27,5 +29,18 @@ public class Lesson {
 
     public Lesson(LessonDto lessonDto) {
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Lesson lesson = (Lesson) o;
+        return id != null && Objects.equals(id, lesson.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

@@ -4,13 +4,11 @@ import edu.school21.restful.models.User;
 import edu.school21.restful.models.dto.UserDto;
 import edu.school21.restful.services.UsersService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Collection;
 
-@Controller
+@RestController
 @RequestMapping("/users")
 public class UsersController {
 
@@ -21,44 +19,28 @@ public class UsersController {
     }
 
     @GetMapping()
-    public ResponseEntity<?> getAllUsers() {
-        try {
-            List<User> coursePage = usersService.findAll();
-            return ResponseEntity.ok(coursePage);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public Collection<User> findBooks() {
+        return usersService.findAll();
     }
 
     @PostMapping()
-    public ResponseEntity<User> addNewUser(@RequestBody UserDto userDto) {
-        try {
-            User user = usersService.addNewUser(userDto);
-            return ResponseEntity.ok(user);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    @ResponseStatus(HttpStatus.CREATED)
+    public User addNewUser(@RequestBody UserDto userDto) {
+        return usersService.addNewUser(userDto);
     }
 
     @PutMapping("/{user-id}")
-    public ResponseEntity<User> updateUser(@RequestBody UserDto userDto, @PathVariable("user-id") String id) {
-        try {
-            User user = usersService.findById(Long.valueOf(id));
-            usersService.updateUser(user, userDto);
-            return ResponseEntity.ok(user);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public User updateUser(@RequestBody UserDto userDto, @PathVariable("user-id") String id) {
+        User user = usersService.findById(Long.valueOf(id));
+        usersService.updateUser(user, userDto);
+        return user;
     }
 
     @DeleteMapping("/{user-id}")
-    public ResponseEntity<?> deleteUser(@PathVariable("user-id") String id) {
-        try {
-            usersService.delete(usersService.findById(Long.valueOf(id)));
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable("user-id") String id) {
+        usersService.deleteById(Long.valueOf(id));
     }
-
 }

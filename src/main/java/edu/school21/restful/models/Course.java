@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
@@ -23,13 +24,16 @@ public class Course {
     private LocalDate startDate;
     private LocalDate endDate;
     private String name;
-    @ManyToOne
-    private User teachers;
-    @ManyToOne
-    private User students;
+    @OneToMany
+    @ToString.Exclude
+    private List<User> teachers;
+    @OneToMany
+    @ToString.Exclude
+    private List<User> students;
     private String description;
-    @ManyToOne
-    private Lesson lessons;
+    @OneToMany
+    @ToString.Exclude
+    private List<Lesson> lessons;
 
     public Course(CourseDto courseDto) {
         this.startDate = LocalDate.parse(courseDto.getStartDate(), ISO_LOCAL_DATE);

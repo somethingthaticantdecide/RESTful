@@ -25,23 +25,26 @@ public class UsersService {
     }
 
     public User addNewUser(UserDto userDto) {
-        User user = new User(userDto);
+        User user = new User();
+        setFields(user, userDto);
         userRepository.save(user);
         return user;
     }
 
     public void updateUser(User user, UserDto userDto) {
+        setFields(user, userDto);
+        userRepository.save(user);
+    }
+
+    private void setFields(User user, UserDto userDto) {
         user.setFirstname(userDto.getFirstname());
         user.setLastname(userDto.getLastname());
         user.setLogin(userDto.getLogin());
         user.setPassword(userDto.getPassword());
         user.setRoles(Role.valueOf(userDto.getRoles()));
-        userRepository.save(user);
     }
 
-    public void delete(User user) {
-        if (user != null) {
-            userRepository.delete(user);
-        }
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
     }
 }
