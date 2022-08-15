@@ -9,13 +9,12 @@ import edu.school21.restful.models.dto.UserDto;
 import edu.school21.restful.services.CoursesService;
 import edu.school21.restful.services.LessonService;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/courses")
 public class CoursesController {
 

@@ -13,7 +13,6 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@NoArgsConstructor
 public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +27,6 @@ public class Lesson {
     private User teacher;
 
     public Lesson(LessonDto lessonDto) {
-
     }
 
     @Override
