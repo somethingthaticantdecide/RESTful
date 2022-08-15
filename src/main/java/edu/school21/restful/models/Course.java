@@ -21,8 +21,8 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private Date startDate;
+    private Date endDate;
     private String name;
     @OneToMany
     @ToString.Exclude
@@ -36,8 +36,8 @@ public class Course {
     private List<Lesson> lessons;
 
     public Course(CourseDto courseDto) {
-        this.startDate = LocalDate.parse(courseDto.getStartDate(), ISO_LOCAL_DATE);
-        this.endDate = LocalDate.parse(courseDto.getEndDate(), ISO_LOCAL_DATE);
+        this.startDate = courseDto.getStartDate();
+        this.endDate = courseDto.getEndDate();
         this.description = courseDto.getDescription();
         this.name = courseDto.getName();
     }

@@ -20,8 +20,8 @@ public class Lesson {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    private LocalDate startTime;
-    private LocalDate endTime;
+    private Date startTime;
+    private Date endTime;
     private String dayOfWeek;
     @OneToOne
     @JoinColumn(name = "teacher_id")

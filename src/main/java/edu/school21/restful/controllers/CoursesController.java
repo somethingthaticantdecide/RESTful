@@ -12,11 +12,8 @@ import edu.school21.restful.services.UsersService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
-
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
 @RestController
 @RequestMapping("/courses")
@@ -49,6 +46,8 @@ public class CoursesController {
     public Course getCourse(@PathVariable("course-id") String id) {
         return coursesService.findById(Long.valueOf(id));
     }
+
+    //////////////////////////////////////////////////////////////
 
     @PutMapping("/{course-id}")
     @ResponseStatus(HttpStatus.OK)
@@ -88,7 +87,7 @@ public class CoursesController {
         for (Lesson lesson : lessons) {
             if (lesson.getId().equals(Long.valueOf(lessonId))) {
                 lesson.setStartTime(lesson.getStartTime());
-                lesson.setEndTime(LocalDate.parse(lessonDto.getEndTime(), ISO_LOCAL_DATE));
+                lesson.setEndTime(lessonDto.getEndTime());
                 lesson.setDayOfWeek(lessonDto.getDayOfWeek());
                 lesson.setTeacher(usersService.findById(Long.valueOf(lessonDto.getTeacher())));
                 lessonService.save(lesson);
@@ -133,8 +132,6 @@ public class CoursesController {
         course.getStudents().remove(usersService.findById(Long.valueOf(studentId)));
         coursesService.save(course);
     }
-
-    ////////////////
 
     @GetMapping("/{course-id}/teachers")
     @ResponseStatus(HttpStatus.OK)

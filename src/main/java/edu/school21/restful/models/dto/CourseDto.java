@@ -2,13 +2,12 @@ package edu.school21.restful.models.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class CourseDto {
-    private String startDate;
-    private String endDate;
+    private Date startDate;
+    private Date endDate;
     private String name;
-    private String teachers;
-    private String students;
     private String description;
-    private String lessons;
 }
