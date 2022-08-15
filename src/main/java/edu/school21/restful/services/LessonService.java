@@ -24,4 +24,8 @@ public class LessonService {
         lessonRepository.save(lesson);
         return lesson;
     }
+
+    public void save(Lesson lesson) {
+        lessonRepository.save(lesson);
+    }
 }

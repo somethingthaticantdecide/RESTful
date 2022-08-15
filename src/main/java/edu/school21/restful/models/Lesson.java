@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
@@ -19,8 +20,8 @@ public class Lesson {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    private Date startTime;
-    private Date endTime;
+    private LocalDate startTime;
+    private LocalDate endTime;
     private String dayOfWeek;
     @OneToOne
     @JoinColumn(name = "teacher_id")
