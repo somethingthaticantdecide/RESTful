@@ -18,9 +18,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
             name = "Shankhadeep Ghoshal"))
 )
 public class ResTfulApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ResTfulApplication.class, args);
     }
-
 }
