@@ -51,10 +51,8 @@ public class CoursesController {
 
     @PutMapping("/{course-id}")
     @ResponseStatus(HttpStatus.OK)
-    public Course updateCourse(@RequestBody CourseDto courseDto, @PathVariable("course-id") String id) {
-        Course course = coursesService.findById(Long.valueOf(id));
-        coursesService.updateCourse(course, courseDto);
-        return course;
+    public Course updateCourse(@RequestBody CourseDto courseDto, @PathVariable("course-id") String courseId) {
+        return coursesService.updateCourse(courseDto, courseId);
     }
 
     @DeleteMapping("/{course-id}")

@@ -1,7 +1,7 @@
 package edu.school21.restful.services;
 
+import edu.school21.restful.exceptions.NotFoundException;
 import edu.school21.restful.models.Course;
-import edu.school21.restful.models.User;
 import edu.school21.restful.models.dto.CourseDto;
 import edu.school21.restful.repository.CoursesRepository;
 import org.springframework.stereotype.Service;
@@ -10,35 +10,40 @@ import java.util.List;
 
 @Service
 public class CoursesService {
-    private final CoursesRepository coursesRepository;
+    private final CoursesRepository courseRepository;
 
-    public CoursesService(CoursesRepository coursesRepository) {
-        this.coursesRepository = coursesRepository;
+    public CoursesService(CoursesRepository courseRepository) {
+        this.courseRepository = courseRepository;
     }
 
     public List<Course> findAll() {
-        return coursesRepository.findAll();
+        return courseRepository.findAll();
     }
 
     public Course findById(Long id) {
-        return coursesRepository.findById(id).orElse(null);
+        return courseRepository.findById(id).orElse(null);
     }
 
     public Course addCourse(CourseDto courseDto) {
         Course course = new Course(courseDto);
-        coursesRepository.save(course);
+        courseRepository.save(course);
         return course;
     }
 
-    public void updateCourse(Course course, CourseDto courseDto) {
-
+    public Course updateCourse(CourseDto courseDto, String id) {
+        Course course = courseRepository.findById(Long.parseLong(id)).orElseThrow(NotFoundException::new);
+        course.setStartDate(courseDto.getStartDate());
+        course.setEndDate(courseDto.getEndDate());
+        course.setName(courseDto.getName());
+        course.setDescription(courseDto.getDescription());
+        return courseRepository.saveAndFlush(course);
     }
 
     public void deleteById(Long id) {
-        coursesRepository.deleteById(id);
+        courseRepository.deleteById(id);
     }
 
     public void save(Course course) {
-        coursesRepository.save(course);
+        courseRepository.save(course);
     }
 }
