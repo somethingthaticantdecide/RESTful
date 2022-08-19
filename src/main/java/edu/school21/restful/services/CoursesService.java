@@ -25,9 +25,7 @@ public class CoursesService {
     }
 
     public Course addCourse(CourseDto courseDto) {
-        Course course = new Course(courseDto);
-        courseRepository.save(course);
-        return course;
+        return courseRepository.save(new Course(courseDto.getStartDate(), courseDto.getEndDate(), courseDto.getName(), courseDto.getDescription()));
     }
 
     public Course updateCourse(CourseDto courseDto, String id) {

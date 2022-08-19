@@ -4,12 +4,9 @@ import edu.school21.restful.models.dto.CourseDto;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
 @Getter
 @Setter
@@ -35,11 +32,11 @@ public class Course {
     @ToString.Exclude
     private List<Lesson> lessons;
 
-    public Course(CourseDto courseDto) {
-        this.startDate = courseDto.getStartDate();
-        this.endDate = courseDto.getEndDate();
-        this.description = courseDto.getDescription();
-        this.name = courseDto.getName();
+    public Course(Date startDate, Date endDate, String name, String description) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.name = name;
+        this.description = description;
     }
 
     @Override
