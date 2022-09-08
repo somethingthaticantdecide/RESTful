@@ -2,19 +2,17 @@ package edu.school21.restful.controllers;
 
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import edu.school21.restful.models.User;
+import edu.school21.restful.models.dto.UserDto;
+import edu.school21.restful.services.UsersService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 import edu.school21.restful.configs.JwtTokenUtil;
 import edu.school21.restful.models.JwtRequest;
@@ -26,26 +24,14 @@ public class JwtAuthenticationController {
 
 	private final AuthenticationManager authenticationManager;
 	private final JwtTokenUtil jwtTokenUtil;
-	private final UserDetailsService jwtInMemoryUserDetailsService;
+	private final UsersService usersService;
+	private final PasswordEncoder passwordEncoder;
 
-	public JwtAuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, UserDetailsService jwtInMemoryUserDetailsService) {
+	public JwtAuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, UsersService usersService, PasswordEncoder passwordEncoder) {
 		this.authenticationManager = authenticationManager;
 		this.jwtTokenUtil = jwtTokenUtil;
-		this.jwtInMemoryUserDetailsService = jwtInMemoryUserDetailsService;
-	}
-
-	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)
-			throws Exception {
-
-		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
-
-		final UserDetails userDetails = jwtInMemoryUserDetailsService
-				.loadUserByUsername(authenticationRequest.getUsername());
-
-		final String token = jwtTokenUtil.generateToken(userDetails);
-
-		return ResponseEntity.ok(new JwtResponse(token));
+		this.usersService = usersService;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	private void authenticate(String username, String password) throws Exception {
@@ -59,5 +45,21 @@ public class JwtAuthenticationController {
 		} catch (BadCredentialsException e) {
 			throw new Exception("INVALID_CREDENTIALS", e);
 		}
+	}
+
+	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+		User user = usersService.loadUserByUsername(authenticationRequest.getUsername());
+		final String token = jwtTokenUtil.generateToken(user);
+		return ResponseEntity.ok(new JwtResponse(token));
+	}
+
+	@PostMapping("/signUp")
+	public ResponseEntity<?> signUp(@RequestBody UserDto userDto) {
+		userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+		User user = usersService.addNewUser(userDto);
+		final String token = jwtTokenUtil.generateToken(user);
+		return ResponseEntity.ok(new JwtResponse(token));
 	}
 }

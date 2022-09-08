@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import edu.school21.restful.services.UsersService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,16 +17,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.ExpiredJwtException;
 
-import edu.school21.restful.services.JwtUserDetailsService;
-
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-	private final JwtUserDetailsService jwtUserDetailsService;
+	private final UsersService usersService;
 	private final JwtTokenUtil jwtTokenUtil;
 
-	public JwtRequestFilter(JwtUserDetailsService jwtUserDetailsService, JwtTokenUtil jwtTokenUtil) {
-		this.jwtUserDetailsService = jwtUserDetailsService;
+	public JwtRequestFilter(UsersService usersService, JwtTokenUtil jwtTokenUtil) {
+		this.usersService = usersService;
 		this.jwtTokenUtil = jwtTokenUtil;
 	}
 
@@ -55,11 +53,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		//Once we get the token validate it.
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-			UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
+			UserDetails userDetails = this.usersService.loadUserByUsername(username);
 
 			// if token is valid configure Spring Security to manually set authentication
 			if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
-
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
 				usernamePasswordAuthenticationToken

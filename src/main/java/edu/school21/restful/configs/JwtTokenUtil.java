@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import edu.school21.restful.models.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -55,8 +56,11 @@ public class JwtTokenUtil implements Serializable {
 		return false;
 	}
 
-	public String generateToken(UserDetails userDetails) {
+	public String generateToken(User userDetails) {
 		Map<String, Object> claims = new HashMap<>();
+		claims.put("id", userDetails.getId());
+		claims.put("role", userDetails.getRoles());
+		claims.put("login", userDetails.getLogin());
 		return doGenerateToken(claims, userDetails.getUsername());
 	}
 
