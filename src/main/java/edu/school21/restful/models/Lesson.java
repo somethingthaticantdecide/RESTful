@@ -1,20 +1,21 @@
 package edu.school21.restful.models;
 
 import edu.school21.restful.models.dto.LessonDto;
-import lombok.*;
-import org.hibernate.Hibernate;
 
+import lombok.*;
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
+
+import org.hibernate.Hibernate;
+import org.springframework.hateoas.RepresentationModel;
 
 @Entity
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class Lesson {
+public class Lesson extends RepresentationModel<Lesson> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -28,6 +29,9 @@ public class Lesson {
     private User teacher;
 
     public Lesson(LessonDto lessonDto) {
+        this.startTime = lessonDto.getStartTime();
+        this.endTime = lessonDto.getEndTime();
+        this.dayOfWeek = lessonDto.getDayOfWeek();
     }
 
     @Override

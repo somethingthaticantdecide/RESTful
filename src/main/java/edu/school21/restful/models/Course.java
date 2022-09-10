@@ -1,7 +1,7 @@
 package edu.school21.restful.models;
 
-import edu.school21.restful.models.dto.CourseDto;
 import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -13,7 +13,7 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 @Entity
-public class Course {
+public class Course extends RepresentationModel<Course> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

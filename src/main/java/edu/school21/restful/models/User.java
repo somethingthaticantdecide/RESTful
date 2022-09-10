@@ -5,6 +5,7 @@ import edu.school21.restful.models.roles.Role;
 
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
@@ -17,7 +18,7 @@ import javax.persistence.*;
 @Table(name = "usr")
 @Entity
 @NoArgsConstructor
-public class User implements UserDetails {
+public class User extends RepresentationModel<User> implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

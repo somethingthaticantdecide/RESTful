@@ -72,6 +72,7 @@ public class CoursesController {
     public Lesson addLessonsByCourse(@RequestBody LessonDto lessonDto, @PathVariable("course-id") String id) {
         Course course = coursesService.findById(Long.valueOf(id));
         Lesson lesson = new Lesson(lessonDto);
+        lesson.setTeacher(usersService.findById(Long.valueOf(lessonDto.getTeacher())));
         course.getLessons().add(lesson);
         coursesService.save(course);
         return lesson;

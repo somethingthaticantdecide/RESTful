@@ -19,12 +19,6 @@ public class LessonService {
         return lessonRepository.findAll();
     }
 
-    public Lesson addCourse(LessonDto lessonDto) {
-        Lesson lesson = new Lesson(lessonDto);
-        lessonRepository.save(lesson);
-        return lesson;
-    }
-
     public void save(Lesson lesson) {
         lessonRepository.save(lesson);
     }
