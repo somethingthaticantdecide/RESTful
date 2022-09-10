@@ -3,6 +3,7 @@ package edu.school21.restful.configs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -42,19 +43,40 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.csrf().disable()
-				// dont authenticate this particular request
+		httpSecurity.cors().and().csrf().disable()
 				.authorizeRequests()
-				.antMatchers("/authenticate").permitAll()
-				.antMatchers("/signUp").permitAll()
-
-				// all other requests need to be authenticated
-				.anyRequest().authenticated().and().
+				.antMatchers("/", "/swagger-ui/**", "/explorer/**", "/signUp").permitAll()
+				.antMatchers(HttpMethod.GET,
+						"/users",
+						"/courses",
+						"/courses/*",
+						"/courses/*/lessons",
+						"/courses/*/students",
+						"/courses/*/teachers").permitAll()
+				.antMatchers(HttpMethod.POST,
+						"/users",
+						"/courses",
+						"/courses/*/lessons",
+						"/courses/*/students",
+						"/courses/*/teachers").hasRole("ADMIN")
+				.antMatchers(HttpMethod.PUT,
+						"/users/*",
+						"/courses/*",
+						"/courses/*/lessons/*").hasRole("ADMIN")
+				.antMatchers(HttpMethod.DELETE,
+						"/users/*",
+						"/courses/*",
+						"/courses/*/lessons/*",
+						"/courses/*/students/*",
+						"/courses/*/teachers/*").hasRole("ADMIN")
+				.anyRequest().authenticated()
+				.and()
 				// make sure we use stateless session; session won't be used to
 				// store user's state.
-				exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
+				.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+				.and()
+				.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
 		// Add a filter to validate the tokens with every request
 		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}

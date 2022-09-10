@@ -44,7 +44,7 @@ public class ResTfulApplicationTests {
     @Before
     public void init() throws Exception {
 //        authenticate(username, password, "/authenticate");
-        signUp(new UserDto(username, "lastname", "ROLE_STUDENT", "login", password));
+        signUp(new UserDto(username, "lastname", "ROLE_ADMIN", "login", password));
     }
 
     private void authenticate(String username, String password, String url) throws Exception {
@@ -68,14 +68,18 @@ public class ResTfulApplicationTests {
 
     @Test
     public void userUnauthorizedTest() throws Exception {
-        mockMvc.perform(get("/users"))
+        UserDto userDto = new UserDto("firstname", "lastname", "ROLE_STUDENT", "login", "password");
+        String content = mapper.writeValueAsString(userDto);
+        mockMvc.perform(post("/users")
+                        .contentType(APPLICATION_JSON)
+                        .content(content)
+                        .accept(APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void getUsersTest() throws Exception {
-        mockMvc.perform(get("/users").header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk());
+        mockMvc.perform(get("/users")).andExpect(status().isOk());
     }
 
     @Test
