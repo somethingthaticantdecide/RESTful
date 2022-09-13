@@ -20,7 +20,6 @@ public class Lesson extends RepresentationModel<Lesson> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-
     private Date startTime;
     private Date endTime;
     private String dayOfWeek;

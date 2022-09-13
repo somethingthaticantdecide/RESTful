@@ -9,13 +9,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @OpenAPIDefinition(
-    info = @Info(title = "ResTful school 21 project Docs",
+    info = @Info(
+        title = "ResTful school 21 project Docs",
         version = "1.0",
         description = "This is the official documentation of the ResTful API developed by jmontagu",
-        license = @License(name = "Apache 2.0",
+        license = @License(
+            name = "Apache 2.0",
             url = "https://www.apache.org/licenses/LICENSE-2.0"),
-        contact = @Contact(email = "ghoshalshankhadeep@hotmail.com",
-            name = "Shankhadeep Ghoshal"))
+        contact = @Contact(
+            email = "ghoshalshankhadeep@hotmail.com",
+            name = "Shankhadeep Ghoshal")
+    )
 )
 public class ResTfulApplication {
     public static void main(String[] args) {
