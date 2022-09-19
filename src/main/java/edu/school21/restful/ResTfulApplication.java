@@ -15,10 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         description = "This is the official documentation of the ResTful API developed by jmontagu",
         license = @License(
             name = "Apache 2.0",
-            url = "https://www.apache.org/licenses/LICENSE-2.0"),
-        contact = @Contact(
-            email = "ghoshalshankhadeep@hotmail.com",
-            name = "Shankhadeep Ghoshal")
+            url = "https://www.apache.org/licenses/LICENSE-2.0")
     )
 )
 public class ResTfulApplication {

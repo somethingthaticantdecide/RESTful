@@ -1,20 +1,23 @@
 package edu.school21.restful.controllers;
 
+import edu.school21.restful.exceptions.NotFoundException;
 import edu.school21.restful.models.Course;
 import edu.school21.restful.models.Lesson;
 import edu.school21.restful.models.User;
 import edu.school21.restful.models.dto.CourseDto;
 import edu.school21.restful.models.dto.LessonDto;
 import edu.school21.restful.models.dto.UserDto;
+import edu.school21.restful.models.enums.State;
 import edu.school21.restful.services.CoursesService;
 import edu.school21.restful.services.LessonService;
 import edu.school21.restful.services.UsersService;
+import org.springframework.data.rest.webmvc.PersistentEntityResource;
+import org.springframework.data.rest.webmvc.PersistentEntityResourceAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -35,7 +38,7 @@ public class CoursesController {
 
     @GetMapping(produces = { "application/hal+json" })
     @ResponseStatus(HttpStatus.OK)
-    public Collection<Course> getAllCourses() {
+    public CollectionModel<Course> getAllCourses() {
         List<Course> allCourses = coursesService.findAll();
 
         for (Course course : allCourses) {
@@ -52,9 +55,8 @@ public class CoursesController {
                     .getStudentsByCourse(courseId)).withRel("students"));
             }
         }
-//        Link link = linkTo(CoursesController.class).withSelfRel();
-//        CollectionModel<Course> result = CollectionModel.of(allCourses, link);
-        return allCourses;
+        Link link = linkTo(CoursesController.class).withSelfRel();
+        return CollectionModel.of(allCourses, link);
     }
 
     @PostMapping()
@@ -176,5 +178,13 @@ public class CoursesController {
         Course course = coursesService.findById(Long.valueOf(courseId));
         course.getTeachers().remove(usersService.findById(Long.valueOf(teacherId)));
         coursesService.save(course);
+    }
+
+    @RequestMapping(value = "/courses/{courseId}/publish", method = RequestMethod.PUT)
+    @ResponseBody
+    public PersistentEntityResource publish(@PathVariable("courseId") Long courseId, PersistentEntityResourceAssembler asm) {
+        Course course = coursesService.findById(courseId);
+        course.setState(State.PUBLISHED);
+        return asm.toFullResource(coursesService.save(course));
     }
 }

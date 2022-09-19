@@ -41,7 +41,7 @@ public class CoursesService {
         courseRepository.deleteById(id);
     }
 
-    public void save(Course course) {
-        courseRepository.save(course);
+    public Course save(Course course) {
+        return courseRepository.save(course);
     }
 }

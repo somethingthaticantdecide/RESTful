@@ -1,5 +1,6 @@
 package edu.school21.restful.models;
 
+import edu.school21.restful.models.enums.State;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -31,12 +32,15 @@ public class Course extends RepresentationModel<Course> {
     @OneToMany
     @ToString.Exclude
     private List<Lesson> lessons;
+    @Enumerated(EnumType.STRING)
+    private State state;
 
     public Course(Date startDate, Date endDate, String name, String description) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.name = name;
         this.description = description;
+        this.state = State.DRAFT;
     }
 
     @Override
