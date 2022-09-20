@@ -40,12 +40,10 @@ public class CoursesController {
     @ResponseStatus(HttpStatus.OK)
     public CollectionModel<Course> getAllCourses() {
         List<Course> allCourses = coursesService.findAll();
-
         for (Course course : allCourses) {
             String courseId = String.valueOf(course.getId());
             course.add(linkTo(CoursesController.class).slash(courseId).withSelfRel());
             course.add(linkTo(methodOn(CoursesController.class).getCourse(courseId)).withRel("course"));
-
             if (course.getLessons().size() > 0) {
                 course.add(linkTo(methodOn(CoursesController.class)
                     .getLessonsByCourse(courseId)).withRel("lessons"));
