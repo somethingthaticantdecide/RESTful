@@ -1,6 +1,5 @@
 package edu.school21.restful.controllers;
 
-import edu.school21.restful.exceptions.NotFoundException;
 import edu.school21.restful.models.Course;
 import edu.school21.restful.models.Lesson;
 import edu.school21.restful.models.User;
@@ -11,10 +10,11 @@ import edu.school21.restful.models.enums.State;
 import edu.school21.restful.services.CoursesService;
 import edu.school21.restful.services.LessonService;
 import edu.school21.restful.services.UsersService;
-import org.springframework.data.rest.webmvc.PersistentEntityResource;
-import org.springframework.data.rest.webmvc.PersistentEntityResourceAssembler;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,57 +24,57 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/courses")
+@RequiredArgsConstructor
 public class CoursesController {
 
     private final CoursesService coursesService;
     private final LessonService lessonService;
     private final UsersService usersService;
 
-    public CoursesController(CoursesService coursesService, LessonService lessonService, UsersService usersService) {
-        this.coursesService = coursesService;
-        this.lessonService = lessonService;
-        this.usersService = usersService;
-    }
-
     @GetMapping(produces = { "application/hal+json" })
     @ResponseStatus(HttpStatus.OK)
     public CollectionModel<Course> getAllCourses() {
         List<Course> allCourses = coursesService.findAll();
         for (Course course : allCourses) {
-            String courseId = String.valueOf(course.getId());
-            course.add(linkTo(CoursesController.class).slash(courseId).withSelfRel());
-            course.add(linkTo(methodOn(CoursesController.class).getCourse(courseId)).withRel("course"));
+            course.add(linkTo(CoursesController.class).slash(course.getId()).withSelfRel());
+            course.add(linkTo(methodOn(CoursesController.class).getCourse(course.getId())).withRel("course"));
             if (course.getLessons().size() > 0) {
-                course.add(linkTo(methodOn(CoursesController.class)
-                    .getLessonsByCourse(courseId)).withRel("lessons"));
+                course.add(linkTo(methodOn(CoursesController.class).getLessonsByCourse(course.getId())).withRel("lessons"));
             }
             if (course.getStudents().size() > 0) {
-                course.add(linkTo(methodOn(CoursesController.class)
-                    .getStudentsByCourse(courseId)).withRel("students"));
+                course.add(linkTo(methodOn(CoursesController.class).getStudentsByCourse(course.getId())).withRel("students"));
             }
         }
         Link link = linkTo(CoursesController.class).withSelfRel();
         return CollectionModel.of(allCourses, link);
     }
 
-    @PostMapping()
+    @PostMapping(produces = { "application/hal+json" })
     @ResponseStatus(HttpStatus.OK)
-    public Course addCourse(@RequestBody CourseDto courseDto) {
-        return coursesService.addCourse(courseDto);
+    public RepresentationModel<?> addCourse(@RequestBody CourseDto courseDto) {
+        return RepresentationModel.of(coursesService.addCourse(courseDto));
     }
 
     @GetMapping("/{course-id}")
+    public RepresentationModel<?> getCourse(@PathVariable("course-id") Long id) {
+        return RepresentationModel.of(coursesService.findById(id));
+    }
+
+    @PutMapping(value = "{courseId}/publish")
+    @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public Course getCourse(@PathVariable("course-id") String id) {
-        return coursesService.findById(Long.valueOf(id));
+    public RepresentationModel<?> publish(@PathVariable("courseId") Long courseId) {
+        Course course = coursesService.findById(courseId);
+        course.setState(State.PUBLISHED);
+        return RepresentationModel.of(coursesService.save(course));
     }
 
     //////////////////////////////////////////////////////////////
 
     @PutMapping("/{course-id}")
     @ResponseStatus(HttpStatus.OK)
-    public Course updateCourse(@RequestBody CourseDto courseDto, @PathVariable("course-id") String courseId) {
-        return coursesService.updateCourse(courseDto, courseId);
+    public RepresentationModel<?> updateCourse(@RequestBody CourseDto courseDto, @PathVariable("course-id") String courseId) {
+        return RepresentationModel.of(coursesService.updateCourse(courseDto, courseId));
     }
 
     @DeleteMapping("/{course-id}")
@@ -85,14 +85,14 @@ public class CoursesController {
 
     @GetMapping("/{course-id}/lessons")
     @ResponseStatus(HttpStatus.OK)
-    public List<Lesson> getLessonsByCourse(@PathVariable("course-id") String id) {
-        return coursesService.findById(Long.valueOf(id)).getLessons();
+    public List<Lesson> getLessonsByCourse(@PathVariable("course-id") Long id) {
+        return coursesService.findById(id).getLessons();
     }
 
     @PostMapping("/{course-id}/lessons")
     @ResponseStatus(HttpStatus.OK)
-    public Lesson addLessonsByCourse(@RequestBody LessonDto lessonDto, @PathVariable("course-id") String id) {
-        Course course = coursesService.findById(Long.valueOf(id));
+    public Lesson addLessonsByCourse(@RequestBody LessonDto lessonDto, @PathVariable("course-id") Long id) {
+        Course course = coursesService.findById(id);
         Lesson lesson = new Lesson(lessonDto);
         lesson.setTeacher(usersService.findById(Long.valueOf(lessonDto.getTeacher())));
         course.getLessons().add(lesson);
@@ -132,15 +132,15 @@ public class CoursesController {
 
     @GetMapping("/{course-id}/students")
     @ResponseStatus(HttpStatus.OK)
-    public List<User> getStudentsByCourse(@PathVariable("course-id") String id) {
-        return coursesService.findById(Long.valueOf(id)).getStudents();
+    public List<User> getStudentsByCourse(@PathVariable("course-id") Long id) {
+        return coursesService.findById(id).getStudents();
     }
 
     @PostMapping("/{course-id}/students")
     @ResponseStatus(HttpStatus.OK)
-    public User addStudentsByCourse(@RequestBody UserDto userDto, @PathVariable("course-id") String id) {
-        Course course = coursesService.findById(Long.valueOf(id));
-        User user = new User();
+    public User addStudentsByCourse(@RequestBody UserDto userDto, @PathVariable("course-id") Long id) {
+        Course course = coursesService.findById(id);
+        User user = new User(userDto);
         course.getStudents().add(user);
         coursesService.save(course);
         return user;
@@ -164,7 +164,7 @@ public class CoursesController {
     @ResponseStatus(HttpStatus.OK)
     public User addTeachersByCourse(@RequestBody UserDto userDto, @PathVariable("course-id") String id) {
         Course course = coursesService.findById(Long.valueOf(id));
-        User user = new User();
+        User user = new User(userDto);
         course.getTeachers().add(user);
         coursesService.save(course);
         return user;
@@ -176,13 +176,5 @@ public class CoursesController {
         Course course = coursesService.findById(Long.valueOf(courseId));
         course.getTeachers().remove(usersService.findById(Long.valueOf(teacherId)));
         coursesService.save(course);
-    }
-
-    @RequestMapping(value = "/courses/{courseId}/publish", method = RequestMethod.PUT)
-    @ResponseBody
-    public PersistentEntityResource publish(@PathVariable("courseId") Long courseId, PersistentEntityResourceAssembler asm) {
-        Course course = coursesService.findById(courseId);
-        course.setState(State.PUBLISHED);
-        return asm.toFullResource(coursesService.save(course));
     }
 }

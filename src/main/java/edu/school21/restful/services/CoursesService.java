@@ -17,7 +17,7 @@ public class CoursesService {
     }
 
     public List<Course> findAll() {
-        return courseRepository.findAll();
+        return (List<Course>) courseRepository.findAll();
     }
 
     public Course findById(Long id) {
@@ -34,7 +34,7 @@ public class CoursesService {
         course.setEndDate(courseDto.getEndDate());
         course.setName(courseDto.getName());
         course.setDescription(courseDto.getDescription());
-        return courseRepository.saveAndFlush(course);
+        return courseRepository.save(course);
     }
 
     public void deleteById(Long id) {

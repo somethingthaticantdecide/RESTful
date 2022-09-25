@@ -39,8 +39,8 @@ public class UsersController {
 
     @PutMapping("/{user-id}")
     @ResponseStatus(HttpStatus.OK)
-    public User updateUser(@RequestBody UserDto userDto, @PathVariable("user-id") String id) {
-        User user = usersService.findById(Long.valueOf(id));
+    public User updateUser(@RequestBody UserDto userDto, @PathVariable("user-id") Long id) {
+        User user = usersService.findById(id);
         usersService.updateUser(user, userDto);
         return user;
     }

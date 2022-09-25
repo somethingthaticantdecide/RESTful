@@ -42,7 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.cors().disable().csrf().disable()
 				.authorizeRequests()
-				.antMatchers("/", "/swagger-ui/**", "/explorer/**", "/signUp", "/v3/api-docs/**", "/").permitAll()
+				.antMatchers("/", "/swagger-ui/**", "/explorer/**", "/signUp", "/authenticate", "/v3/api-docs/**", "/").permitAll()
 				.antMatchers(HttpMethod.GET,
 						"/users",
 						"/courses",
@@ -59,6 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.PUT,
 						"/users/*",
 						"/courses/*",
+						"/courses/*/publish",
 						"/courses/*/lessons/*").hasRole("ADMIN")
 				.antMatchers(HttpMethod.DELETE,
 						"/users/*",

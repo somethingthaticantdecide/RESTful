@@ -1,22 +1,29 @@
 package edu.school21.restful;
 
 import edu.school21.restful.models.JwtRequest;
+import edu.school21.restful.models.User;
 import edu.school21.restful.models.dto.UserDto;
 
+import edu.school21.restful.models.roles.Role;
+import edu.school21.restful.repository.UserRepository;
+import edu.school21.restful.services.UsersService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -28,11 +35,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureRestDocs("target/generated-snippets")
 public class ResTfulApplicationTests {
-
     @Autowired
     private MockMvc mockMvc;
 //    @MockBean
-//    private UsersService usersService;
+//    private UserRepository userRepository;
     private final ObjectMapper mapper = new ObjectMapper();
     private String token;
     private final String username = "firstname";
@@ -40,7 +46,9 @@ public class ResTfulApplicationTests {
 
     @BeforeEach
     public void setUp() {
-//        when(usersService.findById(1L)).thenReturn(new User(1L ,"firstname", "lastname", Role.ROLE_STUDENT, "login", "password"));
+//        when(userRepository.findUserByFirstname(username)).thenCallRealMethod();
+//        doNothing().when(userRepository).deleteById(1L);
+//        userRepository.save(new User(new UserDto(username, "lastname", "ROLE_ADMIN", "login", password)));
     }
 
     @Before
