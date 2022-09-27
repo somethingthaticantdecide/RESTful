@@ -6,9 +6,13 @@ import edu.school21.restful.exceptions.NotFoundException;
 import edu.school21.restful.models.Course;
 import edu.school21.restful.models.JwtRequest;
 import edu.school21.restful.models.Lesson;
+import edu.school21.restful.models.User;
 import edu.school21.restful.models.dto.UserDto;
 import edu.school21.restful.models.enums.State;
+import edu.school21.restful.models.roles.Role;
 import edu.school21.restful.repository.CoursesRepository;
+import edu.school21.restful.repository.LessonRepository;
+import edu.school21.restful.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +44,10 @@ class WebLayerTest {
     private MockMvc mvc;
     @Autowired
     private CoursesRepository coursesRepository;
+    @Autowired
+    private LessonRepository lessonRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     private String token;
     private ObjectMapper mapper = new ObjectMapper();
@@ -64,9 +72,21 @@ class WebLayerTest {
             course.setStartDate(Date.valueOf(LocalDate.now()));
             course.setEndDate(Date.valueOf(LocalDate.now()));
             course.setDescription("test course");
-            course.setLessons(new ArrayList<>());
-            course.setStudents(new ArrayList<>());
-            course.setTeachers(new ArrayList<>());
+            Lesson lesson = new Lesson();
+            lessonRepository.save(lesson);
+            ArrayList<Lesson> lessons = new ArrayList<>();
+            lessons.add(lesson);
+            course.setLessons(lessons);
+            User student = new User("student", "pass", Role.ROLE_STUDENT);
+            userRepository.save(student);
+            ArrayList<User> students = new ArrayList<>();
+            students.add(student);
+            course.setStudents(students);
+            User teacher = new User("teacher", "pass", Role.ROLE_TEACHER);
+            userRepository.save(teacher);
+            ArrayList<User> teachers = new ArrayList<>();
+            teachers.add(teacher);
+            course.setTeachers(teachers);
         }
         course.setState(State.DRAFT);
         coursesRepository.save(course);

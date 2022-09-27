@@ -10,26 +10,35 @@ You can publish a course with status *DRAFT*.
 
 .request
 ----
-PUT /courses/1/publish HTTP/1.1
+GET /courses/1 HTTP/1.1
 Accept: application/hal+json
 Host: localhost:8080
 ----
 .response
 ----
 {
-  "startDate" : null,
-  "endDate" : null,
-  "name" : null,
-  "description" : "test course",
-  "state" : "PUBLISHED",
-  "_links" : {
-    "courses" : {
-      "href" : "http://localhost:8080/courses"
-    },
-    "self" : {
-      "href" : "http://localhost:8080/courses/1"
+    "startDate": "2022-09-25T21:00:00.000+00:00",
+    "endDate": "2022-09-25T21:00:00.000+00:00",
+    "name": "name course",
+    "description": "test course",
+    "state": "DRAFT",
+    "_links": {
+        "courses": {
+            "href": "http://localhost:8080/courses"
+        },
+        "self": {
+            "href": "http://localhost:8080/courses/1"
+        },
+        "students": {
+            "href": "http://localhost:8080/courses/1/students"
+        },
+        "lessons": {
+            "href": "http://localhost:8080/courses/1/lessons"
+        },
+        "publish": {
+            "href": "http://localhost:8080/courses/1/publish"
+        }
     }
-  }
 }
 ----
 

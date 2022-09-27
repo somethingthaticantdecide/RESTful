@@ -4,6 +4,8 @@ import edu.school21.restful.exceptions.NotFoundException;
 import edu.school21.restful.models.Course;
 import edu.school21.restful.models.dto.CourseDto;
 import edu.school21.restful.repository.CoursesRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,8 +18,8 @@ public class CoursesService {
         this.courseRepository = courseRepository;
     }
 
-    public List<Course> findAll() {
-        return (List<Course>) courseRepository.findAll();
+    public Page<Course> findAll(Pageable pageable) {
+        return courseRepository.findAll(pageable);
     }
 
     public Course findById(Long id) {

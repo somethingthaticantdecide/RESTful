@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @OpenAPIDefinition(
     info = @Info(
-        title = "ResTful school 21 project Docs",
+        title = "RESTful school 21 project Docs",
         version = "1.0",
         description = "This is the official documentation of the ResTful API developed by jmontagu",
         license = @License(

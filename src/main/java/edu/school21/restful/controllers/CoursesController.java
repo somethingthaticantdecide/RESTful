@@ -11,13 +11,20 @@ import edu.school21.restful.services.CoursesService;
 import edu.school21.restful.services.LessonService;
 import edu.school21.restful.services.UsersService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -25,6 +32,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @RestController
 @RequestMapping("/courses")
 @RequiredArgsConstructor
+@Tag(name="My Courses controller", description="My Courses controller description")
 public class CoursesController {
 
     private final CoursesService coursesService;
@@ -32,9 +40,13 @@ public class CoursesController {
     private final UsersService usersService;
 
     @GetMapping(produces = { "application/hal+json" })
+    @Operation(
+            summary = "getAllCourses",
+            description = "Возвращает все имеющиеся курсы [есть пагинация, сортировка по ID]"
+    )
     @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<Course> getAllCourses() {
-        List<Course> allCourses = coursesService.findAll();
+    public CollectionModel<Page<Course>> getAllCourses(@PageableDefault(sort = "id", size = 10) Pageable pageable) {
+        Page<Course> allCourses = coursesService.findAll(pageable);
         for (Course course : allCourses) {
             course.add(linkTo(CoursesController.class).slash(course.getId()).withSelfRel());
             course.add(linkTo(methodOn(CoursesController.class).getCourse(course.getId())).withRel("course"));
@@ -46,7 +58,7 @@ public class CoursesController {
             }
         }
         Link link = linkTo(CoursesController.class).withSelfRel();
-        return CollectionModel.of(allCourses, link);
+        return CollectionModel.of(Collections.singleton(allCourses), link);
     }
 
     @PostMapping(produces = { "application/hal+json" })
@@ -63,7 +75,7 @@ public class CoursesController {
     @PutMapping(value = "{courseId}/publish")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public RepresentationModel<?> publish(@PathVariable("courseId") Long courseId) {
+    public RepresentationModel<?> publish(@PathVariable("courseId") @Parameter(description = "Идентификатор курса") Long courseId) {
         Course course = coursesService.findById(courseId);
         course.setState(State.PUBLISHED);
         return RepresentationModel.of(coursesService.save(course));

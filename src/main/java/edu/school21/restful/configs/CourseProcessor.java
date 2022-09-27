@@ -20,9 +20,9 @@ public class CourseProcessor implements RepresentationModelProcessor<EntityModel
         model.add(linkTo(CoursesController.class).withRel("courses"));
         model.add(linkTo(methodOn(CoursesController.class).getCourse(course.getId())).withSelfRel());
         if (course.getStudents().size() > 0)
-            course.add(linkTo(methodOn(CoursesController.class).getStudentsByCourse(course.getId())).withRel("students"));
+            model.add(linkTo(methodOn(CoursesController.class).getStudentsByCourse(course.getId())).withRel("students"));
         if (course.getLessons().size() > 0)
-            course.add(linkTo(methodOn(CoursesController.class).getLessonsByCourse(course.getId())).withRel("lessons"));
+            model.add(linkTo(methodOn(CoursesController.class).getLessonsByCourse(course.getId())).withRel("lessons"));
         if (course.getState().equals(State.DRAFT))
             model.add(linkTo(methodOn(CoursesController.class).publish(course.getId())).withRel("publish"));
         return model;
