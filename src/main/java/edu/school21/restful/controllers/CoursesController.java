@@ -1,5 +1,6 @@
 package edu.school21.restful.controllers;
 
+import edu.school21.restful.exceptions.NotFoundException;
 import edu.school21.restful.models.Course;
 import edu.school21.restful.models.Lesson;
 import edu.school21.restful.models.User;
@@ -7,6 +8,7 @@ import edu.school21.restful.models.dto.CourseDto;
 import edu.school21.restful.models.dto.LessonDto;
 import edu.school21.restful.models.dto.UserDto;
 import edu.school21.restful.models.enums.State;
+import edu.school21.restful.models.requests.UserRequest;
 import edu.school21.restful.services.CoursesService;
 import edu.school21.restful.services.LessonService;
 import edu.school21.restful.services.UsersService;
@@ -21,6 +23,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -158,10 +161,12 @@ public class CoursesController {
     @PostMapping("/{course-id}/students")
     @Operation(description = "Добавляет студента на курс")
     @ResponseStatus(HttpStatus.OK)
-    public User addStudentsByCourse(@RequestBody UserDto userDto, @PathVariable("course-id") Long id) {
-        Course course = coursesService.findById(id);
-        User user = new User(userDto);
-        course.getStudents().add(user);
+    public User addStudentsByCourse(@RequestBody UserRequest userRequest, @PathVariable("course-id") Long courseId) {
+        Course course = coursesService.findById(courseId);
+        if (userRequest.getUserId() == null) throw new NotFoundException();
+        User user = usersService.findById(userRequest.getUserId());
+        if (!course.getStudents().contains(user))
+            course.getStudents().add(user);
         coursesService.save(course);
         return user;
     }
@@ -186,10 +191,12 @@ public class CoursesController {
     @PostMapping("/{course-id}/teachers")
     @Operation(description = "Добавляет учителя на курса")
     @ResponseStatus(HttpStatus.OK)
-    public User addTeachersByCourse(@RequestBody UserDto userDto, @PathVariable("course-id") String id) {
-        Course course = coursesService.findById(Long.valueOf(id));
-        User user = new User(userDto);
-        course.getTeachers().add(user);
+    public User addTeachersByCourse(@RequestBody UserRequest userRequest, @PathVariable("course-id") Long courseId) {
+        Course course = coursesService.findById(courseId);
+        if (userRequest.getUserId() == null) throw new NotFoundException();
+        User user = usersService.findById(userRequest.getUserId());
+        if (!course.getTeachers().contains(user))
+            course.getTeachers().add(user);
         coursesService.save(course);
         return user;
     }

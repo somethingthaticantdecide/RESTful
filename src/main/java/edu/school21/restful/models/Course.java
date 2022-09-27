@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -41,6 +42,9 @@ public class Course extends RepresentationModel<Course> {
         this.name = name;
         this.description = description;
         this.state = State.DRAFT;
+        this.teachers = new ArrayList<>();
+        this.students = new ArrayList<>();
+        this.lessons = new ArrayList<>();
     }
 
     @Override
