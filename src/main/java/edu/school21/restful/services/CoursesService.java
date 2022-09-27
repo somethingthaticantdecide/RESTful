@@ -23,7 +23,7 @@ public class CoursesService {
     }
 
     public Course findById(Long id) {
-        return courseRepository.findById(id).orElse(null);
+        return courseRepository.findById(id).orElseThrow(NotFoundException::new);
     }
 
     public Course addCourse(CourseDto courseDto) {

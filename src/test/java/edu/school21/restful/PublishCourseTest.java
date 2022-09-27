@@ -2,9 +2,7 @@ package edu.school21.restful;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import edu.school21.restful.exceptions.NotFoundException;
 import edu.school21.restful.models.Course;
-import edu.school21.restful.models.JwtRequest;
 import edu.school21.restful.models.Lesson;
 import edu.school21.restful.models.User;
 import edu.school21.restful.models.dto.UserDto;
@@ -15,7 +13,6 @@ import edu.school21.restful.repository.LessonRepository;
 import edu.school21.restful.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,10 +21,8 @@ import org.springframework.data.rest.webmvc.RestMediaTypes;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import javax.xml.crypto.Data;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -39,7 +34,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 @AutoConfigureMockMvc
 @SpringBootTest
 @AutoConfigureRestDocs("target/generated-snippets")
-class WebLayerTest {
+class PublishCourseTest {
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -50,7 +45,7 @@ class WebLayerTest {
     private UserRepository userRepository;
 
     private String token;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public String signUp(UserDto userDto) throws Exception {
         String content = mapper.writeValueAsString(userDto);

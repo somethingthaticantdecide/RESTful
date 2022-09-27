@@ -18,14 +18,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedModel;
-import org.springframework.hateoas.RepresentationModel;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -39,42 +36,44 @@ public class CoursesController {
     private final CoursesService coursesService;
     private final LessonService lessonService;
     private final UsersService usersService;
+    private final PagedResourcesAssembler<Course> pagedCourseResourcesAssembler;
+    private final PagedResourcesAssembler<Lesson> pagedLessonResourcesAssembler;
+    private final PagedResourcesAssembler<User> pageUserResourcesAssembler;
 
     @GetMapping(produces = { "application/hal+json" })
-    @Operation(
-        summary = "getAllCourses",
-        description = "Возвращает все имеющиеся курсы [есть пагинация, сортировка по ID]"
-    )
+    @Operation(description = "Возвращает все имеющиеся курсы [есть пагинация, сортировка по ID]")
     @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<Course> getAllCourses(@PageableDefault(sort = "id", size = 10) Pageable pageable) {
+    public PagedModel<EntityModel<Course>> getAllCourses(@PageableDefault(sort = "id", size = 10) Pageable pageable) {
         Page<Course> allCourses = coursesService.findAll(pageable);
         for (Course course : allCourses) {
             course.add(linkTo(CoursesController.class).slash(course.getId()).withSelfRel());
             course.add(linkTo(methodOn(CoursesController.class).getCourse(course.getId())).withRel("course"));
-            if (course.getLessons().size() > 0) {
-                course.add(linkTo(methodOn(CoursesController.class).getLessonsByCourse(course.getId())).withRel("lessons"));
+            if (course.getLessons() != null && course.getLessons().size() > 0) {
+                course.add(linkTo(methodOn(CoursesController.class)).slash("lessons").withRel("lessons"));
             }
-            if (course.getStudents().size() > 0) {
-                course.add(linkTo(methodOn(CoursesController.class).getStudentsByCourse(course.getId())).withRel("students"));
+            if (course.getStudents() != null && course.getStudents().size() > 0) {
+                course.add(linkTo(methodOn(CoursesController.class)).slash("students").withRel("students"));
             }
         }
-        Link link = linkTo(CoursesController.class).withSelfRel();
-        return PagedModel.of(allCourses, link);
+        return pagedCourseResourcesAssembler.toModel(allCourses);
+    }
+
+    @GetMapping("/{course-id}")
+    @Operation(description = "Возвращает курс по id")
+    @ResponseStatus(HttpStatus.OK)
+    public RepresentationModel<?> getCourse(@PathVariable("course-id") Long id) {
+        return RepresentationModel.of(coursesService.findById(id));
     }
 
     @PostMapping(produces = { "application/hal+json" })
+    @Operation(description = "Добавление нового курса")
     @ResponseStatus(HttpStatus.OK)
     public RepresentationModel<?> addCourse(@RequestBody CourseDto courseDto) {
         return RepresentationModel.of(coursesService.addCourse(courseDto));
     }
 
-    @GetMapping("/{course-id}")
-    public RepresentationModel<?> getCourse(@PathVariable("course-id") Long id) {
-        return RepresentationModel.of(coursesService.findById(id));
-    }
-
     @PutMapping(value = "{courseId}/publish")
-    @ResponseBody
+    @Operation(description = "Публикация курса")
     @ResponseStatus(HttpStatus.OK)
     public RepresentationModel<?> publish(@PathVariable("courseId") @Parameter(description = "Идентификатор курса") Long courseId) {
         Course course = coursesService.findById(courseId);
@@ -82,27 +81,30 @@ public class CoursesController {
         return RepresentationModel.of(coursesService.save(course));
     }
 
-    //////////////////////////////////////////////////////////////
-
     @PutMapping("/{course-id}")
+    @Operation(description = "Обновление информации о курсе")
     @ResponseStatus(HttpStatus.OK)
     public RepresentationModel<?> updateCourse(@RequestBody CourseDto courseDto, @PathVariable("course-id") String courseId) {
         return RepresentationModel.of(coursesService.updateCourse(courseDto, courseId));
     }
 
     @DeleteMapping("/{course-id}")
+    @Operation(description = "Удаление курса")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCourse(@PathVariable("course-id") String id) {
         coursesService.deleteById(Long.valueOf(id));
     }
 
     @GetMapping("/{course-id}/lessons")
+    @Operation(description = "Возвращает уроки из курса")
     @ResponseStatus(HttpStatus.OK)
-    public List<Lesson> getLessonsByCourse(@PathVariable("course-id") Long id) {
-        return coursesService.findById(id).getLessons();
+    public PagedModel<EntityModel<Lesson>> getLessonsByCourse(@PathVariable("course-id") Long id, @PageableDefault(sort = "id", size = 10) Pageable pageable) {
+        Page<Lesson> lessons = lessonService.getLessonsByCourse(id, pageable);
+        return pagedLessonResourcesAssembler.toModel(lessons);
     }
 
     @PostMapping("/{course-id}/lessons")
+    @Operation(description = "Добавляет урок в курс")
     @ResponseStatus(HttpStatus.OK)
     public Lesson addLessonsByCourse(@RequestBody LessonDto lessonDto, @PathVariable("course-id") Long id) {
         Course course = coursesService.findById(id);
@@ -114,6 +116,7 @@ public class CoursesController {
     }
 
     @PutMapping("/{course-id}/lessons/{lesson-id}")
+    @Operation(description = "Изменяет урок в курсе")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateLessonsInCourse(@RequestBody LessonDto lessonDto, @PathVariable("course-id") String courseId, @PathVariable("lesson-id") String lessonId) {
         Course course = coursesService.findById(Long.valueOf(courseId));
@@ -131,6 +134,7 @@ public class CoursesController {
     }
 
     @DeleteMapping("/{course-id}/lessons/{lesson-id}")
+    @Operation(description = "Добавляет урок в курс")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLessonFromCourse(@PathVariable("course-id") String courseId, @PathVariable("lesson-id") String lessonId) {
         Course course = coursesService.findById(Long.valueOf(courseId));
@@ -144,12 +148,15 @@ public class CoursesController {
     }
 
     @GetMapping("/{course-id}/students")
+    @Operation(description = "Возвращает студентов курса")
     @ResponseStatus(HttpStatus.OK)
-    public List<User> getStudentsByCourse(@PathVariable("course-id") Long id) {
-        return coursesService.findById(id).getStudents();
+    public PagedModel<EntityModel<User>> getStudentsByCourse(@PathVariable("course-id") Long id, @PageableDefault(sort = "id", size = 10) Pageable pageable) {
+        Page<User> students = usersService.getStudentByCourse(id, pageable);
+        return pageUserResourcesAssembler.toModel(students);
     }
 
     @PostMapping("/{course-id}/students")
+    @Operation(description = "Добавляет студента на курс")
     @ResponseStatus(HttpStatus.OK)
     public User addStudentsByCourse(@RequestBody UserDto userDto, @PathVariable("course-id") Long id) {
         Course course = coursesService.findById(id);
@@ -160,6 +167,7 @@ public class CoursesController {
     }
 
     @DeleteMapping("/{course-id}/students/{student-id}")
+    @Operation(description = "Удаляет студента с курса")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteStudentFromCourse(@PathVariable("course-id") String courseId, @PathVariable("student-id") String studentId) {
         Course course = coursesService.findById(Long.valueOf(courseId));
@@ -168,12 +176,15 @@ public class CoursesController {
     }
 
     @GetMapping("/{course-id}/teachers")
+    @Operation(description = "Возвращает учителей курса")
     @ResponseStatus(HttpStatus.OK)
-    public List<User> getTeachersByCourse(@PathVariable("course-id") String id) {
-        return coursesService.findById(Long.valueOf(id)).getTeachers();
+    public PagedModel<EntityModel<User>> getTeachersByCourse(@PathVariable("course-id") Long id, @PageableDefault(sort = "id", size = 10) Pageable pageable) {
+        Page<User> teachers = usersService.getTeachersByCourse(id, pageable);
+        return pageUserResourcesAssembler.toModel(teachers);
     }
 
     @PostMapping("/{course-id}/teachers")
+    @Operation(description = "Добавляет учителя на курса")
     @ResponseStatus(HttpStatus.OK)
     public User addTeachersByCourse(@RequestBody UserDto userDto, @PathVariable("course-id") String id) {
         Course course = coursesService.findById(Long.valueOf(id));
@@ -184,6 +195,7 @@ public class CoursesController {
     }
 
     @DeleteMapping("/{course-id}/teachers/{teacher-id}")
+    @Operation(description = "Удаляет учителя с курса")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTeacherFromCourse(@PathVariable("course-id") String courseId, @PathVariable("teacher-id") String teacherId) {
         Course course = coursesService.findById(Long.valueOf(courseId));
