@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -41,11 +42,11 @@ public class CoursesController {
 
     @GetMapping(produces = { "application/hal+json" })
     @Operation(
-            summary = "getAllCourses",
-            description = "Возвращает все имеющиеся курсы [есть пагинация, сортировка по ID]"
+        summary = "getAllCourses",
+        description = "Возвращает все имеющиеся курсы [есть пагинация, сортировка по ID]"
     )
     @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<Page<Course>> getAllCourses(@PageableDefault(sort = "id", size = 10) Pageable pageable) {
+    public CollectionModel<Course> getAllCourses(@PageableDefault(sort = "id", size = 10) Pageable pageable) {
         Page<Course> allCourses = coursesService.findAll(pageable);
         for (Course course : allCourses) {
             course.add(linkTo(CoursesController.class).slash(course.getId()).withSelfRel());
@@ -58,7 +59,7 @@ public class CoursesController {
             }
         }
         Link link = linkTo(CoursesController.class).withSelfRel();
-        return CollectionModel.of(Collections.singleton(allCourses), link);
+        return PagedModel.of(allCourses, link);
     }
 
     @PostMapping(produces = { "application/hal+json" })
