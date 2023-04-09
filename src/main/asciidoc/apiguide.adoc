@@ -1,0 +1,64 @@
+= Course API
+:doctype: book
+:sectanchors:
+:sectlinks:
+
+== Methods
+
+=== Course publish
+You can publish a course with status *DRAFT*.
+
+.request
+----
+GET /courses/1 HTTP/1.1
+Accept: application/hal+json
+Host: localhost:8080
+----
+.response
+----
+{
+    "startDate": "2022-09-25T21:00:00.000+00:00",
+    "endDate": "2022-09-25T21:00:00.000+00:00",
+    "name": "name course",
+    "description": "test course",
+    "state": "DRAFT",
+    "_links": {
+        "courses": {
+            "href": "http://localhost:8080/courses"
+        },
+        "self": {
+            "href": "http://localhost:8080/courses/1"
+        },
+        "students": {
+            "href": "http://localhost:8080/courses/1/students"
+        },
+        "lessons": {
+            "href": "http://localhost:8080/courses/1/lessons"
+        },
+        "publish": {
+            "href": "http://localhost:8080/courses/1/publish"
+        }
+    }
+}
+----
+
+.response-fields
+|===
+|Path |Type |Description
+
+|startDate
+|String
+|Start date of course
+
+|endDate
+|String
+|End date of course
+
+|description
+|String
+|Description of course
+
+|state
+|String
+|State of course
+|===
